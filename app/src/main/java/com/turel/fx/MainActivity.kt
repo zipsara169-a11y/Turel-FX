@@ -24,7 +24,7 @@ import androidx.media3.ui.PlayerView
 import androidx.media3.transformer.Composition
 import androidx.media3.transformer.EditedMediaItem
 import androidx.media3.transformer.ExportResult
-import androidx.media3.transformer.TransformationException
+import androidx.media3.transformer.ExportException
 import androidx.media3.transformer.Transformer
 import java.io.File
 import java.util.Locale
@@ -52,6 +52,7 @@ class MainActivity : ComponentActivity() {
     private lateinit var endSeek: SeekBar
     private lateinit var playButton: Button
     private lateinit var exportButton: Button
+    private lateinit var emptyHint: TextView
     private var exporting = false
 
     private val pickVideo = registerForActivityResult(ActivityResultContracts.OpenDocument()) { uri ->
@@ -64,6 +65,7 @@ class MainActivity : ComponentActivity() {
             player?.prepare()
             player?.playWhenReady = true
             videoStatus.text = "VIDEO LOADED  •  READY TO EDIT"
+            emptyHint.visibility = View.GONE
             playButton.text = "Ⅱ  PAUSE"
         }
     }
@@ -156,7 +158,7 @@ class MainActivity : ComponentActivity() {
         }
         playerView = pv
         frame.addView(pv, FrameLayout.LayoutParams(-1, -1))
-        val emptyHint = TextView(this).apply {
+        emptyHint = TextView(this).apply {
             text = "＋\n\nImport a video to begin"
             gravity = Gravity.CENTER
             textSize = 14f
@@ -353,7 +355,7 @@ class MainActivity : ComponentActivity() {
                     exportButton.text = "⇧  EXPORT VIDEO"
                     Toast.makeText(this@MainActivity, "Export complete: ${output.name}", Toast.LENGTH_LONG).show()
                 }
-                override fun onError(composition: Composition, exportResult: ExportResult, exception: TransformationException) {
+                override fun onError(composition: Composition, exportResult: ExportResult, exception: ExportException) {
                     exporting = false
                     exportButton.isEnabled = true
                     exportButton.text = "⇧  EXPORT VIDEO"
